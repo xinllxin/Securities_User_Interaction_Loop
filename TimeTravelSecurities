@@ -1,0 +1,157 @@
+
+import math
+
+def display_menu():
+    """ prints a menu of options
+    """  
+    print()
+    print('(0) Input a new list of prices')
+    print('(1) Print the current prices')
+    print('(2) Find the latest price')
+    ## Add the new menu options here.
+    print('(3) Find the average price')
+    print('(4) Find the standard deviation')
+    print('(5) Find the max price and its day')
+    print('(6) Test a threshold')
+    print('(7) Your investment plan')
+    print('(8) Quit')
+    print()
+
+def get_new_prices():
+    """ gets a new list of prices from the user and returns it
+    """
+    new_price_list = eval(input('Enter a new list of prices: '))
+    return new_price_list
+
+def print_prices(prices):
+    """ prints the current list of prices
+        input: prices is a list of 1 or more numbers.
+    """
+    if len(prices) == 0:
+        print('No prices have been entered.')
+        return
+    
+    print('Day Price')
+    print('--- -----')
+    for i in range(len(prices)):
+        print('%3d' % i, end='')
+        print('%6.2f' % prices[i])
+
+def latest_price(prices):
+    """ returns the latest (i.e., last) price in a list of prices.
+        input: prices is a list of 1 or more numbers.
+    """
+    return prices[-1]
+
+## Add your functions for options 3-7 below.
+def avg_price (prices):
+    ''' takes a list of 1 or more prices and computes and returns the average price.
+    '''
+    sum_total = 0
+    for x in prices:
+        sum_total += x
+    result = sum_total / len(prices)
+    return result
+
+def std_dev(prices):
+    ''' takes a list of 1 or more prices and computes and returns the standard deviation of the prices
+    '''
+    sum_all = 0
+    for i in range(len(prices)):
+        diff_sqr = (prices[i]- avg_price(prices))**2
+        sum_all += diff_sqr
+    result = math.sqrt(sum_all / len(prices))
+    return result
+
+def max_day(prices):
+    '''takes a list of 1 or more prices and computes and returns the day (i.e., the index) of the maximum price.
+    '''
+    max_price = prices[0]
+    max_day = 0
+    for day in range(1,len(prices)):
+        if prices[day]> max_price:
+            max_price = prices[day]
+            max_day = day  
+    return max_day 
+
+def any_below(prices,n):
+    ''' takes a list of 1 or more prices and an integer threshold, and uses a loop to determine if there are any prices below that threshold.
+    '''
+    for x in prices:
+        if x < n:
+            return True
+    return False
+
+
+def find_plan(prices):
+    '''  takes a list of 2 or more prices, and that uses one or more loops to find the best days on which to buy and sell the stock whose prices are given in the list of prices.
+    '''
+    min_index = 0
+    max_index = 0
+    max_profit = 0
+    cur_index = 0
+    for price in prices: 
+        cur_profit = price - prices[min_index] 
+        if cur_profit != 0 and cur_profit > max_profit: #not buying and selling on the same day,and buy before sell.
+            result = [min_index, cur_index, cur_profit]
+            max_profit = cur_profit
+        if price < prices[min_index]: 
+            min_index = cur_index
+        if price > prices[max_index]: 
+            max_index = cur_index
+        cur_index = cur_index+1
+    return result
+
+
+def tts():
+    """ the main user-interaction loop
+    """
+    prices = []
+
+    while True:
+        display_menu()
+        choice = int(input('Enter your choice: '))
+        print()
+
+        if choice == 0:
+            prices = get_new_prices()
+        elif choice == 8:
+            break
+        elif choice < 8 and len(prices) == 0:
+            print('You must enter some prices first.')
+        elif choice == 1:
+            print_prices(prices)
+        elif choice == 2:
+            latest = latest_price(prices)
+            print('The latest price is', latest)
+        ## add code to process the other choices here
+        elif choice == 3:
+            average = avg_price(prices)
+            print('The average price is', average)
+        elif choice == 4:
+            std = std_dev(prices)
+            print('The standard deviation is',std)
+        elif choice == 5:
+            maximum_day = max_day(prices)
+            maximum_price = prices[maximum_day]
+            print('The max price is',maximum_price,'on day',maximum_day)
+        elif choice == 6:
+            threshold = int(input('Enter the threshold:'))
+            print()                       
+            if any_below(prices,threshold)== True:
+                print ('There is at least one price below',threshold)
+            else:
+                print ('There is no prices below',threshold)
+        elif choice == 7:
+            buy_day = find_plan(prices)[0]
+            buy_price = prices[buy_day]
+            sell_day = find_plan(prices)[1]
+            sell_price = prices[sell_day]
+            profit = find_plan(prices)[2]
+            print('Buy on day',buy_day,'at price',buy_price)
+            print('Sell on day',sell_day,'at price',sell_price)
+            print('Total profit:',profit)
+        else:
+            print('Invalid choice. Please try again.')
+
+    print('See you yesterday!')
